@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Page Not Found!</title>
+    <link rel="stylesheet" href="/css/main.css"/>
+</head>
+<body>
+  <%- include('partials/navbar', {page: '/404'}) %>
+    
+
+      <section class="shadow-lg bg-primary-gray-custom text-black mx-auto rounded-lg flex flex-col items-center justify-center" style="background-image: url('/media/404.jpg'); background-size: 100%; background-repeat: no-repeat; background-position: right 50%; max-width: 90%; width: 80%; height: 400px; margin-bottom: 20px; margin-top: 20px;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-content-start lg:col-span-3">
+                <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Oops ..</h1>
+                <p class="text-left max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400"><%= message %></p>
+
+            </div>                         
+        </div>
+    </section>
+    </div>
+    <script src="/ThemeChanger.js">
+          // Just to keep the theme state across pages
+          document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+            themeToggle.checked = true;
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeToggle.checked = false;
+        }
+
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    });
+    </script>
+</body>
+</html>
