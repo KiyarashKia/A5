@@ -1874,6 +1874,10 @@ html {
   z-index: 50;
 }
 
+.col-span-12 {
+  grid-column: span 12 / span 12;
+}
+
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
@@ -2022,6 +2026,10 @@ html {
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
 .grid-cols-3 {
@@ -2187,6 +2195,10 @@ html {
 
 .pb-5 {
   padding-bottom: 1.25rem;
+}
+
+.pl-12 {
+  padding-left: 3rem;
 }
 
 .pt-5 {
@@ -2386,6 +2398,10 @@ html {
 @media (min-width: 1024px) {
   .lg\:col-span-3 {
     grid-column: span 3 / span 3;
+  }
+
+  .lg\:col-span-6 {
+    grid-column: span 6 / span 6;
   }
 
   .lg\:mb-8 {
