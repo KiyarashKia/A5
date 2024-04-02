@@ -93,6 +93,18 @@ return Set.findAll({
 });
 }
 
+async function addSet(setData) {
+  const { name, year, num_parts, img_url, theme_id, set_num } = setData;
+  await Set.create({
+      name,
+      year: parseInt(year, 10),
+      num_parts: parseInt(num_parts, 10),
+      img_url,
+      theme_id: parseInt(theme_id, 10),
+      set_num
+  });
+}
+
 // Invoking functions
 initialize().then(() => {
 console.log('Initialization successful.');
@@ -110,4 +122,11 @@ getSetByNum('71028-2').then(set => {
 }).catch(console.error);
 });
 
-module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme };
+// Function to get all themes
+async function getAllThemes() {
+  return Theme.findAll();
+}
+
+
+module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, getAllThemes, addSet };
+

@@ -24,15 +24,16 @@
             <img src="<%= legoSet.img_url %>" alt="<%= legoSet.name %>" class="rounded-lg" style="max-width: 100%; height: auto;" onerror="this.src='/image/Image_not_available.png';">
         </div>
         <div class="md:w-2/3 text-lg px-6">
-                <p><strong>Set Name:</strong> <%= legoSet.name %></p>
-                <p><strong>Year Released:</strong> <%= legoSet.year %></p>
-                <p><strong>Theme:</strong> <%= legoSet.theme %></p>
-                <p><strong>Number of Parts:</strong> <%= legoSet.num_parts %><br></p>
-                <div id="quote"></div>
-                <a class="btn bg-red-200 hover:bg-red-400 text-gray-700 py-2 px-4 rounded text-lg mt-4" href="#" onclick="history.back(); return false;">Return</a>
-            </div>
+            <p><strong>Set Name:</strong> <%= legoSet.name %></p>
+            <p><strong>Year Released:</strong> <%= legoSet.year %></p>
+            <p><strong>Theme:</strong> <%= legoSet.Theme.name %></p>
+            <p><strong>Number of Parts:</strong> <%= legoSet.num_parts %><br></p>
+            <div id="quote"></div>
+            <a class="btn bg-red-200 hover:bg-red-400 text-gray-700 py-2 px-4 rounded text-lg mt-4" href="#" onclick="history.back(); return false;">Return</a>
         </div>
     </div>
+</div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {

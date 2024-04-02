@@ -22,7 +22,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const HTTP_PORT = process.env.PORT || 4050;
-
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
@@ -59,6 +59,30 @@ app.get('/lego/sets', (req, res) => {
       });
     }
   });
+
+
+  app.get('/lego/addSet', async (req, res) => {
+    try {
+        const themes = await legoData.getAllThemes();
+        res.render('addSet', { themes });
+    } catch (error) {
+        console.error('Error fetching themes:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+  
+app.post('/lego/addSet', async (req, res) => {
+  try {
+      await legoData.addSet(req.body);
+      res.redirect('/lego/sets');
+  } catch (error) {
+      console.error('Error adding new set:', error);
+      res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
+  
+
 
 app.get('/lego/sets/:set_num', (req, res) => {
     legoData.getSetByNum(req.params.set_num)
