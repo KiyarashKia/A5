@@ -102,7 +102,7 @@ function addSet(setData) {
   });
 }
 
-function getAllThemes() {
+async function getAllThemes() {
   return Theme.findAll();
 }
 
