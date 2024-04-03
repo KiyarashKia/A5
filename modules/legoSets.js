@@ -17,14 +17,13 @@ require('dotenv').config();
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-    host: process.env.DB_HOST,
-    dialect: 'postgres',
-    port: process.env.DB_PORT,
-    dialectOptions: {
-      ssl: { rejectUnauthorized: false },
-    },
+  host: process.env.DB_HOST,
+  dialect: 'postgres',
+  port: process.env.DB_PORT,
+  dialectOptions: {
+    ssl: { rejectUnauthorized: false },
+  },
 });
-
 
 // Theme model
 const Theme = sequelize.define('Theme', {
@@ -61,73 +60,50 @@ const Set = sequelize.define('Set', {
   timestamps: false
 });
 
-// Associate Set with Theme
+// Associattion 
 Set.belongsTo(Theme, { foreignKey: 'theme_id' });
 
 function initialize() {
-return sequelize.sync();
+  return sequelize.sync();
 }
 
 function getAllSets() {
-return Set.findAll({
-  include: [Theme]
-});
-}
-
-function getSetByNum(setNum) {
-return Set.findOne({
-  where: { set_num: setNum },
-  include: [Theme]
-});
-}
-
-function getSetsByTheme(theme) {
-return Set.findAll({
-  include: [{
-    model: Theme,
-    where: {
-      name: {
-        [Sequelize.Op.iLike]: `%${theme}%`
-      }
-    }
-  }]
-});
-}
-
-async function addSet(setData) {
-  const { name, year, num_parts, img_url, theme_id, set_num } = setData;
-  await Set.create({
-      name,
-      year: parseInt(year, 10),
-      num_parts: parseInt(num_parts, 10),
-      img_url,
-      theme_id: parseInt(theme_id, 10),
-      set_num
+  return Set.findAll({
+    include: [Theme]
   });
 }
 
-// Invoking functions
-initialize().then(() => {
-console.log('Initialization successful.');
+function getSetByNum(setNum) {
+  return Set.findOne({
+    where: { set_num: setNum },
+    include: [Theme]
+  });
+}
 
-getAllSets().then(sets => {
-  console.log(`Total sets loaded: ${sets.length}`);
-}).catch(console.error);
+function getSetsByTheme(theme) {
+  return Set.findAll({
+    include: [{
+      model: Theme,
+      where: {
+        name: {
+          [Sequelize.Op.iLike]: `%${theme}%`
+        }
+      }
+    }]
+  });
+}
 
-getSetsByTheme('Harry Potter and Fantastic Beasts Series 2').then(harrySets => {
-  console.log(`Found ${harrySets.length} Harry Potter and Fantastic Beasts Series 2 sets.`);
-}).catch(console.error);
+function addSet(setData) {
+  return Set.create(setData).then(() => {
+    console.log("Set added successfully");
+  }).catch(err => {
+    console.error("Error adding set: ", err);
+    throw new Error(err.errors[0].message);
+  });
+}
 
-getSetByNum('71028-2').then(set => {
-  console.log('Found set by number:', set.get({ plain: true }));
-}).catch(console.error);
-});
-
-// Function to get all themes
-async function getAllThemes() {
+function getAllThemes() {
   return Theme.findAll();
 }
 
-
-module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, getAllThemes, addSet };
-
+module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, addSet, getAllThemes };
