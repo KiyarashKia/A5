@@ -93,6 +93,7 @@ function getSetsByTheme(theme) {
   });
 }
 
+// async addSet
 async function addSet(setData) {
   return Set.create(setData).then(() => {
     console.log("Set added successfully");
@@ -107,6 +108,7 @@ async function getAllThemes() {
   return Theme.findAll();
 }
 
+// async edit set
 async function editSet(set_num, setData) {
   try {
       const set = await Set.findOne({ where: { set_num } });
@@ -121,6 +123,7 @@ async function editSet(set_num, setData) {
   }
 }
 
+// async delSet
 async function deleteSet(set_num) {
   try {
       const result = await Set.destroy({

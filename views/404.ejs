@@ -20,29 +20,30 @@
         </div>
     </section>
     </div>
-    <script src="/ThemeChanger.js">
-          // Just to keep the theme state across pages
-          document.addEventListener('DOMContentLoaded', () => {
-        const themeToggle = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        if (currentTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-            themeToggle.checked = true;
-        } else {
-            document.documentElement.classList.remove('dark');
-            themeToggle.checked = false;
-        }
-
-        themeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
-        });
+    <script src="/ThemeChanger.js">  </script>
+    <script>
+      // Just to keep the theme state across pages
+      document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+    
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    
+      if (currentTheme === 'dark') {
+          themeToggle.checked = true;
+      }
+    }
+    
+    themeToggle.addEventListener('change', function() {
+      if (this.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+      }
+    });
     });
     </script>
 </body>
