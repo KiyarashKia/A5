@@ -79,8 +79,6 @@ app.post('/lego/addSet', async (req, res) => {
   }
 });
 
-  
-
 
 app.get('/lego/sets/:set_num', (req, res) => {
     legoData.getSetByNum(req.params.set_num)
@@ -92,6 +90,32 @@ app.get('/lego/sets/:set_num', (req, res) => {
         res.status(404).render('404', {message: "No Sets found for a set num"});
     });
   });
+
+
+  app.get('/lego/editSet/:set_num', async (req, res) => {
+    try {
+        const set = await legoData.getSetByNum(req.params.set_num);
+        if (!set) {
+            return res.status(404).render('404', { message: "Set not found" });
+        }
+        const themes = await legoData.getAllThemes();
+        res.render('editSet', { set, themes });
+    } catch (error) {
+        console.error('Error fetching set or themes:', error);
+        res.status(500).render('500', { message: `Error fetching data: ${error.message}` });
+    }
+});
+
+app.post('/lego/editSet', async (req, res) => {
+    const { set_num } = req.body;
+    try {
+        await legoData.editSet(set_num, req.body);
+        res.redirect('/lego/sets');
+    } catch (error) {
+        console.error('Error updating set:', error);
+        res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error.message}` });
+    }
+});
 
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});

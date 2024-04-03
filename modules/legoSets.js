@@ -93,7 +93,7 @@ function getSetsByTheme(theme) {
   });
 }
 
-function addSet(setData) {
+async function addSet(setData) {
   return Set.create(setData).then(() => {
     console.log("Set added successfully");
   }).catch(err => {
@@ -102,8 +102,24 @@ function addSet(setData) {
   });
 }
 
+
 async function getAllThemes() {
   return Theme.findAll();
 }
 
-module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, addSet, getAllThemes };
+async function editSet(set_num, setData) {
+  try {
+      const set = await Set.findOne({ where: { set_num } });
+      if (!set) {
+          throw new Error("Set not found");
+      }
+      await set.update(setData);
+      console.log(`Set ${set_num} updated successfully`);
+  } catch (err) {
+      console.error(`Error updating set ${set_num}:`, err);
+      throw err;
+  }
+}
+
+module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, addSet, getAllThemes, editSet };
+
