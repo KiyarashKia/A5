@@ -121,5 +121,20 @@ async function editSet(set_num, setData) {
   }
 }
 
-module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, addSet, getAllThemes, editSet };
+async function deleteSet(set_num) {
+  try {
+      const result = await Set.destroy({
+          where: { set_num }
+      });
+      if (result === 0) {
+          throw new Error("Set not found or already deleted");
+      }
+      console.log(`Set ${set_num} deleted successfully`);
+  } catch (err) {
+      console.error(`Error deleting set ${set_num}:`, err);
+      throw err;
+  }
+}
+
+module.exports = { initialize, getAllSets, getSetByNum, getSetsByTheme, addSet, getAllThemes, editSet, deleteSet };
 

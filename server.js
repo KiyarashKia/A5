@@ -117,6 +117,16 @@ app.post('/lego/editSet', async (req, res) => {
     }
 });
 
+app.get('/lego/deleteSet/:num', async (req, res) => {
+  try {
+      await legoData.deleteSet(req.params.num);
+      res.redirect('/lego/sets');
+  } catch (error) {
+      console.error('Error deleting set:', error);
+      res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});
   }); 
