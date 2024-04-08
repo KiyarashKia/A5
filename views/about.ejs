@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Lego Collection</title>
+    <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+  <%- include('partials/navbar', {page: '/about'}) %>
+    
+
+      <section class="shadow-lg bg-primary-gray-custom text-black mx-auto rounded-lg flex flex-col items-center justify-center" style="background-image: url('/media/Lego\ hero.jpg'); background-size: 100%; background-repeat: no-repeat; background-position: right 80%; max-width: 90%; width: 80%; height: 400px; margin-bottom: 20px; margin-top: 20px;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-content-start lg:col-span-3">
+                <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">About me</h1>
+            </div>                         
+        </div>
+    </section>
+
+    <div class="container mx-auto flex items-center justify-center flex-col w-2/3 pt-5 pb-5">
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold mb-4">All About Me</h1>
+            </div>
+        
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col justify-center items-center">
+                    <img src="media/about.png" alt="Introverted me" class="rounded-lg h-auto">
+                </div>
+                <div>
+                    <p class="text-lg">Hi there! My name is Kiarash Kia, from Iran and student of Computer Programming (CPP) .</p>
+                    <p class="text-lg mt-4">Writing about my main passion, football has always been all my heart! I mean what here people call it soccer. But due to many limits and new situation in my life, these days I am not that close to it</p>
+                    <p class="text-lg mt-4">Regarding my passion in the aspect of my field of study, I really do like front-end side and its combination with UI/UX. The reason behind it is I am keen to be creative and creating things feels very nice.</p>
+                    <p class="text-lg mt-4">From tiny details to big principles, I love to pay attention to all of them, And I hope I can find my way of career in this way after graduation. To always have challenges to be in, and positive problems to solve!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <script src="/ThemeChanger.js">  </script>
+    <script>
+      // Just to keep the theme state across pages
+      document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+    
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    
+      if (currentTheme === 'dark') {
+          themeToggle.checked = true;
+      }
+    }
+    
+    themeToggle.addEventListener('change', function() {
+      if (this.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+      }
+    });
+    });
+    </script>
+</body>
+</html>

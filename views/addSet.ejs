@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Lego Set</title>
+    <link rel="stylesheet" href="/css/main.css"/>
+</head>
+<body>
+    <%- include('partials/navbar', {page: '/lego/addSet'}) %>
+
+    <section class="shadow-lg bg-primary-gray-custom text-black mx-auto rounded-lg flex flex-col items-center justify-center" style="background-image: url('/media/Lego hero.jpg'); background-size: 100%; background-repeat: no-repeat; background-position: right 80%; max-width: 90%; width: 80%; height: 400px; margin-top: 20px;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-content-start lg:col-span-3">
+                <h1 class="text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Add New Lego Set</h1>
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-white rounded-lg shadow-lg p-6 mx-auto flex items-center justify-center flex-col w-2/3 pt-5 pb-5 mt-8" style="height: 700px;">
+        <div class="bg-white shadow-lg rounded-lg p-4 w-2/3" style="height: 400px;">
+            <!-- Inserted Form Starts Here
+            Also set proper limits for each input row -->
+            <form action="/lego/addSet" method="POST" id="addSetForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Set Name:</label>
+                        <input type="text" name="name" id="name" required min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4">
+                        <label for="year" class="block text-sm font-medium text-gray-700">Year:</label>
+                        <input type="number" name="year" id="year" required min="1900" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4">
+                        <label for="num_parts" class="block text-sm font-medium text-gray-700">Number of Parts:</label>
+                        <input type="number" name="num_parts" id="num_parts" required min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4">
+                        <label for="img_url" class="block text-sm font-medium text-gray-700">Image URL:</label>
+                        <input type="url" name="img_url" id="img_url" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    </div>
+                    <div class="mb-4 col-span-2">
+                        <label for="theme_id" class="block text-sm font-medium text-gray-700">Theme:</label>
+                        <select name="theme_id" id="theme_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            <% themes.forEach(theme => { %>
+                                <option value="<%= theme.id %>"><%= theme.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="mb-4 col-span-2">
+                        <label for="set_num" class="block text-sm font-medium text-gray-700">Set Number:</label>
+                        <input type="text" id="set_num" name="set_num" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+                         </div>
+                    <div class="col-span-2 text-right">
+                        <a class="btn bg-red-200 hover:bg-red-400 text-gray-700" href="#" onclick="history.back(); return false;">Return</a>
+                        <button type="Submit" class="btn bg-red-200 hover:bg-red-400 text-gray-700">Add Set</button>
+                    </div>
+                </div>
+            </form>
+            <!-- Inserted Form Ends Here -->
+        </div>
+    </div>
+    
+    
+
+    <script src="/ThemeChanger.js"> </script>
+
+    <!-- Added this to not let user set negative set number -->
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addSetForm').onsubmit = function(e) {
+        var setNum = document.getElementById('set_num').value;
+        if (setNum.startsWith('-')) {
+            e.preventDefault();
+            alert('Set number cannot start with a "-".');
+        }
+    };
+});
+    </script>
+
+    <script>
+      // Just to keep the theme state across pages
+      document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+    
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    
+      if (currentTheme === 'dark') {
+          themeToggle.checked = true;
+      }
+    }
+    
+    themeToggle.addEventListener('change', function() {
+      if (this.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+      }
+    });
+    });
+    </script>
+</body>
+</html>
