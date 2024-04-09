@@ -10,7 +10,9 @@
 
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
-
+const authData = require('./modules/auth-service');
+const clientSessions = require('client-sessions');
+require('dotenv').config();
 const { log } = require("console");
 const legoData = require("./modules/legoSets");
 const theThemes = ["Basic Set", "Series 21 Minifigures", "Looney Tunes"];
@@ -24,17 +26,39 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => {
+
+app.use(clientSessions({
+  cookieName: "session",
+  secret: "uproRUiiMajTe3koSQGf408VD7ZEMw9q317qeQKx3Qyok2GYNn",
+  duration: 2 * 60 * 1000,
+  activeDuration: 1000 * 60,
+}));
+
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
+function ensureLogin(req, res, next) {
+  if (!req.session.userName) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+}
+
+app.get('/', ensureLogin, async (req, res) => {
   //res.sendFile(path.join(__dirname, '/views/home.html'));
   res.render('home');
   });
 
-  app.get('/about', (req, res) => {
+  app.get('/about', ensureLogin, async (req, res) => {
     //res.sendFile(path.join(__dirname, '/views/about.html'));
     res.render('about');
   });
 
-app.get('/lego/sets', (req, res) => {
+app.get('/lego/sets', ensureLogin, async (req, res) => {
     console.log(req.query.theme);
     if (req.query.theme){
       legoData.getSetsByTheme(req.query.theme)
@@ -59,7 +83,7 @@ app.get('/lego/sets', (req, res) => {
   });
 
 
-  app.get('/lego/addSet', async (req, res) => {
+  app.get('/lego/addSet', ensureLogin, async (req, res) => {
     try {
         const themes = await legoData.getAllThemes();
         res.render('addSet', { themes });
@@ -69,7 +93,7 @@ app.get('/lego/sets', (req, res) => {
     }
 });
   
-app.post('/lego/addSet', async (req, res) => {
+app.post('/lego/addSet', ensureLogin, async (req, res) => {
   try {
       await legoData.addSet(req.body);
       res.redirect('/lego/sets');
@@ -80,7 +104,7 @@ app.post('/lego/addSet', async (req, res) => {
 });
 
 
-app.get('/lego/sets/:set_num', (req, res) => {
+app.get('/lego/sets/:set_num', ensureLogin, async (req, res) => {
     legoData.getSetByNum(req.params.set_num)
     .then(set => {
       res.render('set', {legoSet: set});
@@ -92,7 +116,7 @@ app.get('/lego/sets/:set_num', (req, res) => {
   });
 
 
-  app.get('/lego/editSet/:set_num', async (req, res) => {
+  app.get('/lego/editSet/:set_num', ensureLogin, async (req, res) => {
     try {
         const set = await legoData.getSetByNum(req.params.set_num);
         if (!set) {
@@ -106,7 +130,7 @@ app.get('/lego/sets/:set_num', (req, res) => {
     }
 });
 
-app.post('/lego/editSet', async (req, res) => {
+app.post('/lego/editSet', ensureLogin, async (req, res) => {
     const { set_num } = req.body;
     try {
         await legoData.editSet(set_num, req.body);
@@ -117,7 +141,7 @@ app.post('/lego/editSet', async (req, res) => {
     }
 });
 
-app.get('/lego/deleteSet/:num', async (req, res) => {
+app.get('/lego/deleteSet/:num', ensureLogin, async (req, res) => {
   try {
       await legoData.deleteSet(req.params.num);
       res.redirect('/lego/sets');
@@ -127,8 +151,27 @@ app.get('/lego/deleteSet/:num', async (req, res) => {
   }
 });
 
-  app.all('*', (req, res) => { 
-    res.status(404).render('404', {message: "No view matched for the route"});
-  }); 
+authData.initialize()
+  .then(() => {
+    app.listen(HTTP_PORT, () => {
+      console.log(`Server listening on port ${HTTP_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(`Failed to start the server: ${err}`);
+  });
 
-  app.listen(HTTP_PORT, () => console.log(`server listening on: ${HTTP_PORT}`));
+  legoData.initialize()
+.then(() => {
+  console.log('Lego Data Initialized');
+  return authData.initialize();
+})
+.then(() => {
+  console.log('Auth Data Initialized');
+  app.listen(HTTP_PORT, () => {
+    console.log(`Server listening on port ${HTTP_PORT}`);
+  });
+})
+.catch(err => {
+  console.error(`Initialization failed: ${err}`);
+});
