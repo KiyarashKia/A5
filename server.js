@@ -10,9 +10,13 @@
 
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
+<<<<<<< HEAD
 const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
 require('dotenv').config();
+=======
+
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
 const { log } = require("console");
 const legoData = require("./modules/legoSets");
 const theThemes = ["Basic Set", "Series 21 Minifigures", "Looney Tunes"];
@@ -26,6 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
+<<<<<<< HEAD
 
 app.use(clientSessions({
   cookieName: "session",
@@ -49,16 +54,27 @@ function ensureLogin(req, res, next) {
 }
 
 app.get('/', ensureLogin, async (req, res) => {
+=======
+app.get('/', (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
   //res.sendFile(path.join(__dirname, '/views/home.html'));
   res.render('home');
   });
 
+<<<<<<< HEAD
   app.get('/about', ensureLogin, async (req, res) => {
+=======
+  app.get('/about', (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     //res.sendFile(path.join(__dirname, '/views/about.html'));
     res.render('about');
   });
 
+<<<<<<< HEAD
 app.get('/lego/sets', ensureLogin, async (req, res) => {
+=======
+app.get('/lego/sets', (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     console.log(req.query.theme);
     if (req.query.theme){
       legoData.getSetsByTheme(req.query.theme)
@@ -83,7 +99,11 @@ app.get('/lego/sets', ensureLogin, async (req, res) => {
   });
 
 
+<<<<<<< HEAD
   app.get('/lego/addSet', ensureLogin, async (req, res) => {
+=======
+  app.get('/lego/addSet', async (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     try {
         const themes = await legoData.getAllThemes();
         res.render('addSet', { themes });
@@ -93,7 +113,11 @@ app.get('/lego/sets', ensureLogin, async (req, res) => {
     }
 });
   
+<<<<<<< HEAD
 app.post('/lego/addSet', ensureLogin, async (req, res) => {
+=======
+app.post('/lego/addSet', async (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
   try {
       await legoData.addSet(req.body);
       res.redirect('/lego/sets');
@@ -104,7 +128,11 @@ app.post('/lego/addSet', ensureLogin, async (req, res) => {
 });
 
 
+<<<<<<< HEAD
 app.get('/lego/sets/:set_num', ensureLogin, async (req, res) => {
+=======
+app.get('/lego/sets/:set_num', (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     legoData.getSetByNum(req.params.set_num)
     .then(set => {
       res.render('set', {legoSet: set});
@@ -116,7 +144,11 @@ app.get('/lego/sets/:set_num', ensureLogin, async (req, res) => {
   });
 
 
+<<<<<<< HEAD
   app.get('/lego/editSet/:set_num', ensureLogin, async (req, res) => {
+=======
+  app.get('/lego/editSet/:set_num', async (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     try {
         const set = await legoData.getSetByNum(req.params.set_num);
         if (!set) {
@@ -130,7 +162,11 @@ app.get('/lego/sets/:set_num', ensureLogin, async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 app.post('/lego/editSet', ensureLogin, async (req, res) => {
+=======
+app.post('/lego/editSet', async (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
     const { set_num } = req.body;
     try {
         await legoData.editSet(set_num, req.body);
@@ -141,7 +177,11 @@ app.post('/lego/editSet', ensureLogin, async (req, res) => {
     }
 });
 
+<<<<<<< HEAD
 app.get('/lego/deleteSet/:num', ensureLogin, async (req, res) => {
+=======
+app.get('/lego/deleteSet/:num', async (req, res) => {
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
   try {
       await legoData.deleteSet(req.params.num);
       res.redirect('/lego/sets');
@@ -151,6 +191,7 @@ app.get('/lego/deleteSet/:num', ensureLogin, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 authData.initialize()
   .then(() => {
     app.listen(HTTP_PORT, () => {
@@ -175,3 +216,10 @@ authData.initialize()
 .catch(err => {
   console.error(`Initialization failed: ${err}`);
 });
+=======
+  app.all('*', (req, res) => { 
+    res.status(404).render('404', {message: "No view matched for the route"});
+  }); 
+
+  app.listen(HTTP_PORT, () => console.log(`server listening on: ${HTTP_PORT}`));
+>>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
