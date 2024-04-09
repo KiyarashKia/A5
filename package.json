@@ -25,12 +25,11 @@
   "@tailwindcss/typography": "^0.5.10",
   
     
-<<<<<<< HEAD
+
   "client-sessions": "^0.8.0",
   
     
-=======
->>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
+
   "daisyui": "^4.7.2",
   
     
@@ -43,12 +42,11 @@
   "express": "^4.18.2",
   
     
-<<<<<<< HEAD
+
   "mongoose": "^8.3.1",
   
     
-=======
->>>>>>> 9c11305bc4eb66f24f9f3ff5bb36ba80734c981e
+
   "pg": "^8.11.4",
   
     
