@@ -31,7 +31,6 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 <<<<<<< HEAD
-
 app.use(clientSessions({
   cookieName: "session",
   secret: "uproRUiiMajTe3koSQGf408VD7ZEMw9q317qeQKx3Qyok2GYNn",
