@@ -224,12 +224,12 @@ app.get('/userHistory', ensureLogin, (req, res) => {
     res.status(404).render('404', {message: "No view matched for the route"});
   }); 
 
-  
+  // app.listen(HTTP_PORT, () => console.log(`server listening on: ${HTTP_PORT}`));
 
   authData.initialize().then(() => {
     console.log('Authentication data initialization successful.');
-    app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
+    // app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
   }).catch((err) => {
-    console.error(`Failed to initialize authentication service: ${err}`);
+    console.error(`1`);
   });
 
