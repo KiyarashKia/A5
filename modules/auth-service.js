@@ -8,8 +8,13 @@ const userSchema = new Schema({
         type: String,
         unique: true
     },
-    password: String,
-    email: String,
+    password: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+    },
     loginHistory: [{
         dateTime: Date,
         userAgent: String
@@ -24,7 +29,6 @@ function initialize() {
         db.on('error', (err) => {
             reject(err);
         });
-
         db.once('open', () => {
             User = db.model('User', userSchema);
             resolve();
@@ -35,22 +39,31 @@ function initialize() {
 function registerUser(userData) {
     return new Promise((resolve, reject) => {
         if (userData.password !== userData.password2) {
-            reject("Passwords do not match");
-            return;
+            return reject("Passwords do not match");
         }
 
-        let newUser = new User(userData);
-        newUser.save()
-            .then(() => resolve())
-            .catch(err => {
+
+        let newUser = new User({
+            userName: userData.userName,
+            password: userData.password,
+            email: userData.email,
+            loginHistory: []
+        });
+
+        newUser.save((err) => {
+            if (err) {
                 if (err.code === 11000) {
-                    reject("User Name already taken");
+                    return reject("User Name already taken");
                 } else {
-                    reject(`There was an error creating the user: ${err}`);
+                    return reject(`There was an error creating the user: ${err}`);
                 }
-            });
+            } else {
+                resolve();
+            }
+        });
     });
 }
+
 
 function checkUser(userData) {
     return new Promise((resolve, reject) => {

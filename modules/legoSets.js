@@ -11,8 +11,6 @@
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
 
-// const setData = require("../data/setData");
-// const themeData = require("../data/themeData");
 require('dotenv').config();
 const Sequelize = require('sequelize');
 
