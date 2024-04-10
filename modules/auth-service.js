@@ -67,25 +67,40 @@ function registerUser(userData) {
 
 function checkUser(userData) {
     return new Promise((resolve, reject) => {
-        User.findOne({ userName: userData.userName })
-            .then(user => {
-                if (!user) {
-                    reject(`Unable to find user: ${userData.userName}`);
-                } else if (user.password !== userData.password) {
-                    reject(`Incorrect Password for user: ${userData.userName}`);
-                } else {
-                    // Assume we have userData.userAgent from somewhere
-                    user.loginHistory.unshift({ dateTime: new Date().toString(), userAgent: userData.userAgent });
-                    if (user.loginHistory.length > 8) user.loginHistory.pop();
-                    
-                    user.save()
-                        .then(() => resolve(user))
-                        .catch(err => reject(`There was an error verifying the user: ${err}`));
-                }
-            })
-            .catch(err => {
-                reject(`Unable to find user: ${userData.userName}`);
+        User.findOne({ userName: userData.userName }).then(user => {
+            // User not found
+            if (!user) {
+                return reject(`Unable to find user: ${userData.userName}`);
+            }
+
+            // Password does not match
+            if (user.password !== userData.password) {
+                return reject(`Incorrect Password for user: ${userData.userName}`);
+            }
+
+            // Ensure loginHistory does not exceed 8 entries
+            if (user.loginHistory.length >= 8) {
+                user.loginHistory.pop();
+            }
+
+            // Add new login history entry at the beginning
+            user.loginHistory.unshift({
+                dateTime: new Date().toString(),
+                userAgent: userData.userAgent
             });
+
+            // Update the user with new login history
+            User.updateOne({ userName: user.userName }, { $set: { loginHistory: user.loginHistory } })
+                .then(() => {
+                    resolve(user);
+                })
+                .catch(err => {
+                    reject(`There was an error verifying the user: ${err}`);
+                });
+        })
+        .catch(err => {
+            reject(`Unable to find user: ${userData.userName}`);
+        });
     });
 }
 

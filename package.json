@@ -25,6 +25,9 @@
   "@tailwindcss/typography": "^0.5.10",
   
     
+  "client-sessions": "^0.8.0",
+  
+    
   "daisyui": "^4.7.2",
   
     

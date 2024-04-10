@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User History</title>
+    <link rel="stylesheet" href="/path/to/your/css/styles.css"> <!-- Adjust accordingly -->
+    <!-- Include other head elements -->
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero bg-base-200">
+        <div class="hero-content text-center">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold">Hello <%= session.user.userName %>!</h1>
+                <p class="py-6">Email: <%= session.user.email %></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User History Table -->
+    <div class="overflow-x-auto">
+        <table class="table w-full">
+            <!-- Table head -->
+            <thead>
+                <tr>
+                    <th>Login Date/Time</th>
+                    <th>Client Information</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table body -->
+                <% session.user.loginHistory.forEach(function(history) { %>
+                    <tr>
+                        <td><%= new Date(history.dateTime).toLocaleString() %></td>
+                        <td><%= history.userAgent %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+<script src="/ThemeChanger.js">  </script>
+<script>
+      // Just to keep the theme state across pages
+      document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+    
+    if (currentTheme) {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    
+      if (currentTheme === 'dark') {
+          themeToggle.checked = true;
+      }
+    }
+    
+    themeToggle.addEventListener('change', function() {
+      if (this.checked) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+      } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+      }
+    });
+    });
+    </script>
+    </script>

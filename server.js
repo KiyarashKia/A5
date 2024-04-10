@@ -6,27 +6,22 @@
 * 
 *  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Kiarash Kia Student ID: 108688235 Date: 04/02/2024
+*  Name: Kiarash Kia Student ID: 108688235 Date: 04/10/2024
 
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
 const express = require('express');
+const legoData = require('./modules/legoSets');
 const authData = require('./modules/auth-service');
-require('dotenv').config();
+const clientSessions = require('client-sessions');
 const app = express();
-const HTTP_PORT = process.env.PORT || 4050;
+const HTTP_PORT = process.env.PORT || 4070;
 
 const path = require('path');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
-
-app.get('/', (req, res) => {
-  //res.sendFile(path.join(__dirname, '/views/home.html'));
-  res.render('home');
-  });
-
 
   authData.initialize()
   .then(() => {
@@ -38,12 +33,56 @@ app.get('/', (req, res) => {
     console.error(`Failed to initialize authentication service: ${err}`);
   });
 
+  legoData.initialize()
+  .then(() => {
+    console.log('Lego data initialization successful.');
+    return authData.initialize();
+  })
+  .then(() => {
+    console.log('Authentication data initialization successful.');
+    app.listen(HTTP_PORT, () => {
+      console.log(`Server listening on port ${HTTP_PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error(`Failed to initialize services: ${err}`);
+  });
+
+  app.use(clientSessions ({
+    cookieName: "session",
+    secret: process.env.SESSION_SECRET,
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+  }));
+
+  app.use((req, res, next) => {
+    res.locals.session = req.session;
+    next();
+  });
+
+
+  function ensureLogin(req, res, next) {
+    if (!req.session.user) { 
+      res.redirect("/login");
+    } else {
+      next();
+    }
+  }
+
+  app.get('/', (req, res) => {
+    //res.sendFile(path.join(__dirname, '/views/home.html'));
+    res.render('home');
+    });
+  
+
   app.get('/about', (req, res) => {
     //res.sendFile(path.join(__dirname, '/views/about.html'));
     res.render('about');
   });
 
-app.get('/lego/sets', (req, res) => {
+
+
+app.get('/lego/sets', ensureLogin, (req, res) => {
     console.log(req.query.theme);
     if (req.query.theme){
       legoData.getSetsByTheme(req.query.theme)
@@ -68,7 +107,7 @@ app.get('/lego/sets', (req, res) => {
   });
 
 
-  app.get('/lego/addSet', async (req, res) => {
+  app.get('/lego/addSet', ensureLogin, async (req, res) => {
     try {
         const themes = await legoData.getAllThemes();
         res.render('addSet', { themes });
@@ -78,7 +117,7 @@ app.get('/lego/sets', (req, res) => {
     }
 });
   
-app.post('/lego/addSet', async (req, res) => {
+app.post('/lego/addSet', ensureLogin, async (req, res) => {
   try {
       await legoData.addSet(req.body);
       res.redirect('/lego/sets');
@@ -101,7 +140,7 @@ app.get('/lego/sets/:set_num', (req, res) => {
   });
 
 
-  app.get('/lego/editSet/:set_num', async (req, res) => {
+  app.get('/lego/editSet/:set_num', ensureLogin, async (req, res) => {
     try {
         const set = await legoData.getSetByNum(req.params.set_num);
         if (!set) {
@@ -115,7 +154,7 @@ app.get('/lego/sets/:set_num', (req, res) => {
     }
 });
 
-app.post('/lego/editSet', async (req, res) => {
+app.post('/lego/editSet', ensureLogin, async (req, res) => {
     const { set_num } = req.body;
     try {
         await legoData.editSet(set_num, req.body);
@@ -126,7 +165,7 @@ app.post('/lego/editSet', async (req, res) => {
     }
 });
 
-app.get('/lego/deleteSet/:num', async (req, res) => {
+app.get('/lego/deleteSet/:num', ensureLogin, async (req, res) => {
   try {
       await legoData.deleteSet(req.params.num);
       res.redirect('/lego/sets');
@@ -135,6 +174,57 @@ app.get('/lego/deleteSet/:num', async (req, res) => {
       res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
   }
 });
+
+
+
+app.get('/login', (req, res) => {
+  res.render('login'); // Assuming you have a login.ejs view
+});
+
+
+app.get('/register', (req, res) => {
+  res.render('register'); // Assuming you have a register.ejs view
+});
+
+
+app.post('/register', (req, res) => {
+  authData.registerUser(req.body)
+    .then(() => {
+      res.render('register', { successMessage: "User created" });
+    })
+    .catch(err => {
+      res.render('register', { errorMessage: err, userName: req.body.userName });
+    });
+});
+
+
+app.post('/login', (req, res) => {
+  req.body.userAgent = req.get('User-Agent');
+  authData.checkUser(req.body)
+    .then(user => {
+      req.session.user = {
+        userName: user.userName,
+        email: user.email,
+        loginHistory: user.loginHistory
+      };
+      res.redirect('/lego/sets');
+    })
+    .catch(err => {
+      res.render('login', { errorMessage: err, userName: req.body.userName });
+    });
+});
+
+
+app.get('/logout', (req, res) => {
+  req.session.reset();
+  res.redirect('/');
+});
+
+
+app.get('/userHistory', ensureLogin, (req, res) => {
+  res.render('userHistory');
+});
+
 
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});
