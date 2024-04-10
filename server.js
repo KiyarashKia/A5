@@ -15,7 +15,7 @@ const legoData = require('./modules/legoSets');
 const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
 const app = express();
-const HTTP_PORT = process.env.PORT || 4070;
+const HTTP_PORT = process.env.PORT || 4051;
 
 const path = require('path');
 
@@ -23,15 +23,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-  authData.initialize()
-  .then(() => {
-    app.listen(HTTP_PORT, () => {
-      console.log(`Server listening on port ${HTTP_PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error(`Failed to initialize authentication service: ${err}`);
-  });
+
+app.use(clientSessions ({
+  cookieName: "session",
+  secret: process.env.SESSION_SECRET,
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
+
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
+
 
   legoData.initialize()
   .then(() => {
@@ -48,17 +53,6 @@ app.set('view engine', 'ejs');
     console.error(`Failed to initialize services: ${err}`);
   });
 
-  app.use(clientSessions ({
-    cookieName: "session",
-    secret: process.env.SESSION_SECRET,
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
-  }));
-
-  app.use((req, res, next) => {
-    res.locals.session = req.session;
-    next();
-  });
 
 
   function ensureLogin(req, res, next) {
@@ -178,12 +172,12 @@ app.get('/lego/deleteSet/:num', ensureLogin, async (req, res) => {
 
 
 app.get('/login', (req, res) => {
-  res.render('login'); // Assuming you have a login.ejs view
+  res.render('login');
 });
 
 
 app.get('/register', (req, res) => {
-  res.render('register'); // Assuming you have a register.ejs view
+  res.render('register');
 });
 
 
@@ -231,3 +225,11 @@ app.get('/userHistory', ensureLogin, (req, res) => {
   }); 
 
   app.listen(HTTP_PORT, () => console.log(`server listening on: ${HTTP_PORT}`));
+
+  authData.initialize().then(() => {
+    console.log('Authentication data initialization successful.');
+    app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
+  }).catch((err) => {
+    console.error(`Failed to initialize authentication service: ${err}`);
+  });
+
