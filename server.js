@@ -37,31 +37,22 @@ app.use((req, res, next) => {
 });
 
 
-
-  legoData.initialize()
-  .then(() => {
-    console.log('Lego data initialization successful.');
-    return authData.initialize();
-  })
-  .then(() => {
-    console.log('Authentication data initialization successful.');
-    app.listen(HTTP_PORT, () => {
-      console.log(`Server listening on port ${HTTP_PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error(`Failed to initialize services: ${err}`);
-  });
-
-
-
-  function ensureLogin(req, res, next) {
-    if (!req.session.user) { 
-      res.redirect("/login");
-    } else {
-      next();
-    }
+function ensureLogin(req, res, next) {
+  if (!req.session.user) { 
+    res.redirect("/login");
+  } else {
+    next();
   }
+}
+
+
+Promise.all([legoData.initialize(), authData.initialize()])
+  .then(() => {
+    console.log('All services initialized successfully.');
+    app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
+  })
+  .catch(err => console.error(`Failed to initialize services: ${err}`));
+
 
   app.get('/', (req, res) => {
     //res.sendFile(path.join(__dirname, '/views/home.html'));
@@ -223,13 +214,3 @@ app.get('/userHistory', ensureLogin, (req, res) => {
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});
   }); 
-
-  // app.listen(HTTP_PORT, () => console.log(`server listening on: ${HTTP_PORT}`));
-
-  authData.initialize().then(() => {
-    console.log('Authentication data initialization successful.');
-    // app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
-  }).catch((err) => {
-    console.error(`1`);
-  });
-
