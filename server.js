@@ -53,20 +53,10 @@ Promise.all([legoData.initialize(), authData.initialize()])
     console.log('All services initialized successfully.');
     app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
   })
-  .catch(err => console.error(`Failed to initialize services: ${err}`));
-
-
-  app.get('/', (req, res) => {
-    //res.sendFile(path.join(__dirname, '/views/home.html'));
-    res.render('home');
-    });
-  
-
-  app.get('/about', (req, res) => {
-    //res.sendFile(path.join(__dirname, '/views/about.html'));
-    res.render('about');
+  .catch(err => {
+    console.error(`Failed to initialize services: ${err}`);
+    process.exit(1);
   });
-
 
 
 app.get('/lego/sets', ensureLogin, (req, res) => {
