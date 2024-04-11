@@ -11,6 +11,7 @@
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
 
+
 require('dotenv').config();
 const express = require('express');
 const legoData = require('./modules/legoSets');
@@ -18,8 +19,9 @@ const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
 const app = express();
 const HTTP_PORT = process.env.PORT || 3000;
-
-const path = require('path');
+const { log } = require("console");
+const theThemes = ["Basic Set", "Series 21 Minifigures", "Looney Tunes"];
+legoData.initialize();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
