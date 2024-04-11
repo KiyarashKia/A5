@@ -19,9 +19,9 @@ const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
 const app = express();
 const HTTP_PORT = process.env.PORT || 3000;
-const { log } = require("console");
-const theThemes = ["Basic Set", "Series 21 Minifigures", "Looney Tunes"];
-legoData.initialize();
+
+
+const path = require('path');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
