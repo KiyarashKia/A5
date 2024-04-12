@@ -46,7 +46,7 @@ function ensureLogin(req, res, next) {
 // Connect to MongoDB
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGO_CS, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.MONGO_CS);
     console.log('MongoDB Connected');
     initializeServices();
   } catch (error) {
