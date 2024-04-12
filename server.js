@@ -26,8 +26,8 @@ app.set('view engine', 'ejs');
 app.use(clientSessions({
   cookieName: "session",
   secret: process.env.SESSION_SECRET,
-  duration: 30 * 60 * 1000,  // 30 minutes
-  activeDuration: 5 * 60 * 1000,  // 5 minutes more if the session is active
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
 }));
 
 app.use((req, res, next) => {
@@ -156,20 +156,28 @@ function setupRoutes() {
   });
 
   app.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', { errorMessage: '', userName: '' });
   });
 
   app.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', { successMessage: '', errorMessage: '', userName: '' });
   });
 
   app.post('/register', (req, res) => {
     authData.registerUser(req.body)
       .then(() => {
-        res.render('register', {successMessage: "User created"});
+        res.render('register', { 
+          successMessage: "User created", 
+          errorMessage: '',
+          userName: req.body.userName
+        });
       })
       .catch(err => {
-        res.render('register', {errorMessage: err, userName: req.body.userName});
+        res.render('register', {
+          successMessage: '',
+          errorMessage: err.message || 'Failed to register user',
+          userName: req.body.userName
+        });
       });
   });
 
@@ -185,7 +193,10 @@ function setupRoutes() {
         res.redirect('/lego/sets');
       })
       .catch(err => {
-        res.render('login', {errorMessage: err, userName: req.body.userName});
+        res.render('login', {
+          errorMessage: err.message || 'Invalid login attempt',
+          userName: req.body.userName
+        });
       });
   });
 
