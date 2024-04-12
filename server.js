@@ -14,6 +14,7 @@
 
 require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose')
 const legoData = require('./modules/legoSets');
 const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
@@ -27,6 +28,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_CS);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+}
+
+connectDB().then(() => {
+  app.listen(PORT, () => {
+      console.log("listening for requests");
+  })
+})
 
 app.use(clientSessions ({
   cookieName: "session",
