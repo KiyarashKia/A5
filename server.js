@@ -79,24 +79,18 @@ function setupRoutes() {
   });
 
   app.get('/lego/sets', ensureLogin, (req, res) => {
-    legoData.getAllSets()
-      .then(sets => {
-        res.render('sets', {legoSets: sets});
+    Promise.all([legoData.getAllSets(), legoData.getAllThemes()])
+      .then(([sets, themes]) => {
+        res.render('sets', {
+          legoSets: sets,
+          theThemes: themes,
+          currentTheme: req.query.theme || ''
+        });
       })
       .catch(error => {
-        console.error(error);
-        res.status(404).render('404', {message: "No Sets found"});
+        console.error("Error fetching sets or themes:", error);
+        res.status(404).render('404', { message: "No Sets or Themes found" });
       });
-  });
-
-  app.get('/lego/addSet', ensureLogin, async (req, res) => {
-    try {
-      const themes = await legoData.getAllThemes();
-      res.render('addSet', {themes});
-    } catch (error) {
-      console.error('Error fetching themes:', error);
-      res.status(500).send('Internal Server Error');
-    }
   });
 
   app.post('/lego/addSet', ensureLogin, async (req, res) => {
@@ -166,10 +160,10 @@ function setupRoutes() {
   app.post('/register', (req, res) => {
     authData.registerUser(req.body)
       .then(() => {
-        res.render('register', { 
-          successMessage: "User created", 
+        res.render('register', {
+          successMessage: "User created",
           errorMessage: '',
-          userName: req.body.userName
+          userName: ''
         });
       })
       .catch(err => {
@@ -180,7 +174,6 @@ function setupRoutes() {
         });
       });
   });
-
   app.post('/login', (req, res) => {
     req.body.userAgent = req.get('User-Agent');
     authData.checkUser(req.body)
