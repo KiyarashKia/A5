@@ -55,7 +55,6 @@ async function connectDB() {
   }
 }
 
-// Initialize data services
 async function initializeServices() {
   try {
     await legoData.initialize();
@@ -68,6 +67,7 @@ async function initializeServices() {
     process.exit(1);
   }
 }
+
 
 function setupRoutes() {
   app.get('/', (req, res) => {
