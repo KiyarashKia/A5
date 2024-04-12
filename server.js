@@ -80,29 +80,37 @@ function setupRoutes() {
   });
 
   app.get('/lego/sets', ensureLogin, (req, res) => {
-    Promise.all([legoData.getAllSets(), legoData.getAllThemes()])
-      .then(([sets, themes]) => {
-        res.render('sets', {
-          legoSets: sets,
-          theThemes: themes,
-          currentTheme: req.query.theme || ''
+    if (req.query.theme && theThemes.includes(req.query.theme)) {
+        legoData.getSetsByTheme(req.query.theme)
+        
+        .then(themeSets => {
+            res.render('sets', {legoSets: themeSets, currentTheme: req.query.theme, theThemes: theThemes});
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(404).render('404', {message: "No Sets found for the matching theme"});
         });
-      })
-      .catch(error => {
-        console.error("Error fetching sets or themes:", error);
-        res.status(404).render('404', { message: "No Sets or Themes found" });
-      });
-  });
-
-  app.post('/lego/addSet', ensureLogin, async (req, res) => {
-    try {
-      await legoData.addSet(req.body);
-      res.redirect('/lego/sets');
-    } catch (error) {
-      console.error('Error adding new set:', error);
-      res.render('500', {message: `I'm sorry, but we have encountered the following error: ${error}`});
+    } else {
+        legoData.getAllSets()
+        .then(sets => {
+            res.render('sets', {legoSets: sets, currentTheme: "", theThemes: theThemes});
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(404).render('404', {message: "No Sets found"});
+        });
     }
-  });
+});
+
+app.post('/lego/addSet', ensureLogin, async (req, res) => {
+    try {
+        await legoData.addSet(req.body);
+        res.redirect('/lego/sets');
+    } catch (error) {
+        console.error('Error adding new set:', error);
+        res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    }
+});
 
   app.get('/lego/sets/:set_num', (req, res) => {
     legoData.getSetByNum(req.params.set_num)
