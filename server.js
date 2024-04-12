@@ -10,8 +10,6 @@
 
 *  Published URL: https://bewildered-foal-loincloth.cyclic.app/
 ********************************************************************************/
-
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose')
@@ -21,28 +19,11 @@ const clientSessions = require('client-sessions');
 const app = express();
 const HTTP_PORT = process.env.PORT || 3000;
 
-
-const path = require('path');
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_CS);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
-  }
-}
 
-connectDB().then(() => {
-  app.listen(HTTP_PORT, () => {
-      console.log("listening for requests");
-  })
-})
 
 app.use(clientSessions ({
   cookieName: "session",
@@ -55,6 +36,17 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
+
+
+async function connectDB() {
+  try {
+      await mongoose.connect(process.env.MONGO_CS, { useNewUrlParser: true, useUnifiedTopology: true });
+      console.log('MongoDB Connected');
+  } catch (error) {
+      console.error('Failed to connect to MongoDB', error);
+      process.exit(1);
+  }
+}
 
 
 function ensureLogin(req, res, next) {
@@ -228,3 +220,4 @@ app.get('/userHistory', ensureLogin, (req, res) => {
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});
   }); 
+  connectDB().then(initializeServices);
