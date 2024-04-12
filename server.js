@@ -39,7 +39,7 @@ const connectDB = async () => {
 }
 
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  app.listen(HTTP_PORT, () => {
       console.log("listening for requests");
   })
 })
@@ -65,6 +65,10 @@ function ensureLogin(req, res, next) {
   }
 }
 
+app.get('/', (req, res) => {
+  //res.sendFile(path.join(__dirname, '/views/home.html'));
+  res.render('home');
+  });
 
 Promise.all([legoData.initialize(), authData.initialize()])
   .then(() => {
