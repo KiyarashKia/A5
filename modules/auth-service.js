@@ -1,3 +1,16 @@
+/********************************************************************************
+*  WEB322 – Assignment 06
+* 
+*  I declare that this assignment is my own work in accordance with Seneca's
+*  Academic Integrity Policy:
+* 
+*  https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
+* 
+*  Name: Kiarash Kia Student ID: 108688235 Date: 04/12/2024
+
+*  Published URL: https://bewildered-foal-loincloth.cyclic.app/
+********************************************************************************/
+
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -39,8 +52,15 @@ function initialize() {
 
 function registerUser(userData) {
     return new Promise((resolve, reject) => {
-        if (userData.password !== userData.password2) {
+        if (userData.password !== userData.password2 ) {
             return reject("Passwords do not match");
+        }
+
+        const passwordRegex = /^.{6,}$/;
+        
+        if (!passwordRegex.test(userData.password)) {
+            reject("Password Length Insufficent!");
+            return;
         }
 
         bcrypt.hash(userData.password, 10)
