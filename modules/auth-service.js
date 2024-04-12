@@ -42,7 +42,6 @@ function registerUser(userData) {
             return reject("Passwords do not match");
         }
 
-
         let newUser = new User({
             userName: userData.userName,
             password: userData.password,
@@ -50,57 +49,42 @@ function registerUser(userData) {
             loginHistory: []
         });
 
-        newUser.save((err) => {
-            if (err) {
+        newUser.save()
+            .then(() => resolve())
+            .catch(err => {
                 if (err.code === 11000) {
                     return reject("User Name already taken");
                 } else {
                     return reject(`There was an error creating the user: ${err}`);
                 }
-            } else {
-                resolve();
-            }
-        });
+            });
     });
 }
 
 
 function checkUser(userData) {
     return new Promise((resolve, reject) => {
-        User.findOne({ userName: userData.userName }).then(user => {
-            // User not found
-            if (!user) {
-                return reject(`Unable to find user: ${userData.userName}`);
-            }
-
-            // Password does not match
-            if (user.password !== userData.password) {
-                return reject(`Incorrect Password for user: ${userData.userName}`);
-            }
-
-            // Ensure loginHistory does not exceed 8 entries
-            if (user.loginHistory.length >= 8) {
-                user.loginHistory.pop();
-            }
-
-            // Add new login history entry at the beginning
-            user.loginHistory.unshift({
-                dateTime: new Date().toString(),
-                userAgent: userData.userAgent
-            });
-
-            // Update the user with new login history
-            User.updateOne({ userName: user.userName }, { $set: { loginHistory: user.loginHistory } })
-                .then(() => {
-                    resolve(user);
-                })
-                .catch(err => {
-                    reject(`There was an error verifying the user: ${err}`);
+        User.findOne({ userName: userData.userName })
+            .then(user => {
+                if (!user) {
+                    return reject(`Unable to find user: ${userData.userName}`);
+                }
+                if (user.password !== userData.password) {
+                    return reject(`Incorrect Password for user: ${userData.userName}`);
+                }
+                if (user.loginHistory.length >= 8) {
+                    user.loginHistory.pop();
+                }
+                user.loginHistory.unshift({
+                    dateTime: new Date().toString(),
+                    userAgent: userData.userAgent
                 });
-        })
-        .catch(err => {
-            reject(`Unable to find user: ${userData.userName}`);
-        });
+
+                return User.updateOne({ userName: user.userName }, { $set: { loginHistory: user.loginHistory } })
+                    .then(() => resolve(user))
+                    .catch(err => reject(`There was an error verifying the user: ${err}`));
+            })
+            .catch(err => reject(`Unable to find user: ${userData.userName}`));
     });
 }
 

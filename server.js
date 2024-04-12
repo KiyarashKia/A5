@@ -157,23 +157,23 @@ function setupRoutes() {
     res.render('register', { successMessage: '', errorMessage: '', userName: '' });
   });
 
-  app.post('/register', (req, res) => {
-    authData.registerUser(req.body)
-      .then(() => {
-        res.render('register', {
-          successMessage: "User created",
-          errorMessage: '',
-          userName: ''
-        });
-      })
-      .catch(err => {
-        res.render('register', {
-          successMessage: '',
-          errorMessage: err.message || 'Failed to register user',
-          userName: req.body.userName
-        });
+  app.post('/register', async (req, res) => {
+    try {
+      const user = await authData.registerUser(req.body);
+      res.render('register', {
+        successMessage: "User created successfully",
+        errorMessage: '',
+        userName: req.body.userName
       });
+    } catch (err) {
+      res.render('register', {
+        successMessage: '',
+        errorMessage: err.message || 'Failed to register user',
+        userName: req.body.userName
+      });
+    }
   });
+
   app.post('/login', (req, res) => {
     req.body.userAgent = req.get('User-Agent');
     authData.checkUser(req.body)
