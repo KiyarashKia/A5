@@ -12,7 +12,7 @@
 ********************************************************************************/
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const legoData = require('./modules/legoSets');
 const authData = require('./modules/auth-service');
 const clientSessions = require('client-sessions');
@@ -23,13 +23,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-
-
-app.use(clientSessions ({
+app.use(clientSessions({
   cookieName: "session",
   secret: process.env.SESSION_SECRET,
-  duration: 30 * 60 * 1000,
-  activeDuration: 5 * 60 * 1000,
+  duration: 30 * 60 * 1000,  // 30 minutes
+  activeDuration: 5 * 60 * 1000,  // 5 minutes more if the session is active
 }));
 
 app.use((req, res, next) => {
@@ -37,86 +35,86 @@ app.use((req, res, next) => {
   next();
 });
 
-
-async function connectDB() {
-  try {
-      await mongoose.connect(process.env.MONGO_CS, { useNewUrlParser: true, useUnifiedTopology: true });
-      console.log('MongoDB Connected');
-  } catch (error) {
-      console.error('Failed to connect to MongoDB', error);
-      process.exit(1);
-  }
-}
-
-
 function ensureLogin(req, res, next) {
-  if (!req.session.user) { 
+  if (!req.session.user) {
     res.redirect("/login");
   } else {
     next();
   }
 }
 
-app.get('/', (req, res) => {
-  //res.sendFile(path.join(__dirname, '/views/home.html'));
-  res.render('home');
-  });
-
-Promise.all([legoData.initialize(), authData.initialize()])
-  .then(() => {
-    console.log('All services initialized successfully.');
-    app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
-  })
-  .catch(err => {
-    console.error(`Failed to initialize services: ${err}`);
+// Connect to MongoDB
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGO_CS, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log('MongoDB Connected');
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error);
     process.exit(1);
-  });
+  }
+}
 
+// Initialize data services
+async function initializeDataServices() {
+  try {
+    await legoData.initialize();
+    await authData.initialize();
+    console.log('Data services initialized successfully.');
+    app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
+  } catch (err) {
+    console.error('Failed to initialize data services:', err);
+    process.exit(1);
+  }
+}
+
+// Combine DB connection and service initialization
+async function startServer() {
+  await connectDB();
+  await initializeDataServices();
+}
+
+startServer();
+
+// Define routes
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+app.get('/about', (req, res) => {
+  res.render('about');
+});
 
 app.get('/lego/sets', ensureLogin, (req, res) => {
-    console.log(req.query.theme);
-    if (req.query.theme){
-      legoData.getSetsByTheme(req.query.theme)
-      .then(themeSets => {
-        res.render('sets', {legoSets: themeSets, currentTheme: req.query.theme, theThemes: theThemes});
-      })
-      .catch(error => {
-          console.error(error);
-          res.status(404).render('404', {message: "No Sets found for a matching theme"});
-      });
-    }
-    else {
-      legoData.getAllSets()
-      .then(sets => {
-        res.render('sets', {legoSets: sets, currentTheme: "", theThemes: theThemes});
-      })
-      .catch(error => {
-          console.error(error);
-          res.status(404).render('404', {message: "No Sets found"});
-      });
-    }
-  });
-
-
-  app.get('/lego/addSet', ensureLogin, async (req, res) => {
-    try {
-        const themes = await legoData.getAllThemes();
-        res.render('addSet', { themes });
-    } catch (error) {
-        console.error('Error fetching themes:', error);
-        res.status(500).send('Internal Server Error');
-    }
+  legoData.getAllSets()
+    .then(sets => {
+      res.render('sets', { legoSets: sets });
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(404).render('404', { message: "No Sets found" });
+    });
 });
-  
-app.post('/lego/addSet', ensureLogin, async (req, res) => {
+
+app.get('/lego/addSet', ensureLogin, async (req, res) => {
   try {
-      await legoData.addSet(req.body);
-      res.redirect('/lego/sets');
+    const themes = await legoData.getAllThemes();
+    res.render('addSet', { themes });
   } catch (error) {
-      console.error('Error adding new set:', error);
-      res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+    console.error('Error fetching themes:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
+app.post('/lego/addSet', ensureLogin, async (req, res) => {
+  try {
+    await legoData.addSet(req.body);
+    res.redirect('/lego/sets');
+  } catch (error) {
+    console.error('Error adding new set:', error);
+    res.render('500', { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
 
 
 app.get('/lego/sets/:set_num', (req, res) => {
@@ -223,15 +221,4 @@ app.get('/userHistory', ensureLogin, (req, res) => {
 
 
 
-  async function initializeServices() {
-    try {
-        await Promise.all([legoData.initialize(), authData.initialize()]);
-        console.log('All services initialized successfully.');
-        app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
-    } catch (err) {
-        console.error(`Failed to initialize services: ${err}`);
-    }
-}
-
-
-  connectDB().then(initializeServices);
+ 
