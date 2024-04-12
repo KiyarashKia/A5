@@ -26,8 +26,8 @@ app.set('view engine', 'ejs');
 app.use(clientSessions({
   cookieName: "session",
   secret: process.env.SESSION_SECRET,
-  duration: 30 * 60 * 1000,  // 30 minutes
-  activeDuration: 5 * 60 * 1000,  // 5 minutes more if the session is active
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000, 
 }));
 
 app.use((req, res, next) => {
