@@ -220,4 +220,18 @@ app.get('/userHistory', ensureLogin, (req, res) => {
   app.all('*', (req, res) => { 
     res.status(404).render('404', {message: "No view matched for the route"});
   }); 
+
+
+
+  async function initializeServices() {
+    try {
+        await Promise.all([legoData.initialize(), authData.initialize()]);
+        console.log('All services initialized successfully.');
+        app.listen(HTTP_PORT, () => console.log(`Server listening on port ${HTTP_PORT}`));
+    } catch (err) {
+        console.error(`Failed to initialize services: ${err}`);
+    }
+}
+
+
   connectDB().then(initializeServices);
