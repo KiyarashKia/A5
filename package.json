@@ -25,6 +25,9 @@
   "@tailwindcss/typography": "^0.5.10",
   
     
+  "bcryptjs": "^2.4.3",
+  
+    
   "client-sessions": "^0.8.0",
   
     

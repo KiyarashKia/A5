@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - Lego Collection</title>
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
+    <%- include('partials/navbar', {page: '/register'}) %>
+
+    <section class="shadow-lg bg-primary-gray-custom text-black mx-auto rounded-lg flex flex-col items-center justify-center" style="background-image: url('/media/Lego\ hero.jpg'); background-size: 100%; background-repeat: no-repeat; background-position: right 80%; max-width: 90%; width: 80%; height: 400px; margin-bottom: 20px; margin-top: 20px;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-content-start lg:col-span-3">
+                <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">Create Your Account</h1>
+            </div>                         
+        </div>
+    </section>
+
     <div class="bg-white rounded-lg shadow-lg p-6 mx-auto flex items-center justify-center flex-col w-2/3 pt-5 pb-5 mt-8">
         <% if (successMessage) { %>
             <div role="alert" class="alert alert-success">

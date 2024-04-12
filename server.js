@@ -82,7 +82,6 @@ function setupRoutes() {
   app.get('/lego/sets', ensureLogin, (req, res) => {
     if (req.query.theme && theThemes.includes(req.query.theme)) {
         legoData.getSetsByTheme(req.query.theme)
-        
         .then(themeSets => {
             res.render('sets', {legoSets: themeSets, currentTheme: req.query.theme, theThemes: theThemes});
         })
@@ -101,6 +100,17 @@ function setupRoutes() {
         });
     }
 });
+
+app.get('/lego/addSet', ensureLogin, async (req, res) => {
+  try {
+      const themes = await legoData.getAllThemes();
+      res.render('addSet', { themes });
+  } catch (error) {
+      console.error('Error fetching themes:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.post('/lego/addSet', ensureLogin, async (req, res) => {
     try {

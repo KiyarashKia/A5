@@ -3,41 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User History</title>
-    <link rel="stylesheet" href="/path/to/your/css/styles.css"> <!-- Adjust accordingly -->
-    <!-- Include other head elements -->
+    <title>User History - Lego Collection</title>
+    <link rel="stylesheet" href="/css/main.css"/>
 </head>
 <body>
-    <!-- Hero Section -->
-    <div class="hero bg-base-200">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-                <h1 class="text-5xl font-bold">Hello <%= session.user.userName %>!</h1>
-                <p class="py-6">Email: <%= session.user.email %></p>
+    <%- include('partials/navbar', {page: '/userHistory'}) %>
+    
+    <section class="shadow-lg bg-primary-gray-custom text-black mx-auto rounded-lg flex flex-col items-center justify-center" style="background-image: url('/media/Lego\ hero.jpg'); background-size: 100%; background-repeat: no-repeat; background-position: right 80%; max-width: 90%; width: 80%; height: 400px; margin-bottom: 20px; margin-top: 20px;">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-content-start lg:col-span-3">
+                <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">User History</h1>
+            </div>                         
+        </div>
+    </section>
+
+    <div class="container mx-auto p-4 text-center">
+        <div class="rounded shadow-lg bg-white py-3 mb-8 inline-block">
+            <h2 class="text-2xl font-bold">Welcome, <%= session.user.userName %>!</h2>
+            <p class="py-2">Email: <%= session.user.email %></p>
+            <div class="overflow-x-auto">
+                <table class="table w-full">
+                    <!-- Table head -->
+                    <thead>
+                        <tr>
+                            <th>Login Date/Time</th>
+                            <th>Client Information</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table body -->
+                        <% session.user.loginHistory.forEach(function(history) { %>
+                            <tr>
+                                <td><%= new Date(history.dateTime).toLocaleString() %></td>
+                                <td><%= history.userAgent %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-
-    <!-- User History Table -->
-    <div class="overflow-x-auto">
-        <table class="table w-full">
-            <!-- Table head -->
-            <thead>
-                <tr>
-                    <th>Login Date/Time</th>
-                    <th>Client Information</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Table body -->
-                <% session.user.loginHistory.forEach(function(history) { %>
-                    <tr>
-                        <td><%= new Date(history.dateTime).toLocaleString() %></td>
-                        <td><%= history.userAgent %></td>
-                    </tr>
-                <% }); %>
-            </tbody>
-        </table>
     </div>
 
 <script src="/ThemeChanger.js">  </script>
