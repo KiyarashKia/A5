@@ -79,7 +79,7 @@ function setupRoutes() {
     res.render('about');
   });
 
-  app.get('/lego/sets', ensureLogin, (req, res) => {
+  app.get('/lego/sets', (req, res) => {
     if (req.query.theme && theThemes.includes(req.query.theme)) {
         legoData.getSetsByTheme(req.query.theme)
         .then(themeSets => {
